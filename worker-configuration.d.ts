@@ -9,7 +9,11 @@ declare namespace Cloudflare {
 		DB: D1Database;
 	}
 }
-interface Env extends Cloudflare.Env {}
+interface Env extends Cloudflare.Env {
+	JWT_SECRET: "your-secret-key-change-in-production";
+    ENVIRONMENT:"production";
+    API_BASE_URL : "/api/v1";
+}
 
 // Begin runtime types
 /*! *****************************************************************************
