@@ -222,6 +222,7 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		  email: data.body.email,
 		  password_hash: passwordHash,
 		  role: 'user',
+		  bio:'',avatar_url:'',
 		  is_verified: false,
 		  follower_count: 0,
 		  following_count: 0,
