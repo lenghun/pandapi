@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { Env } from '../types';
 
 export interface QueryParams {
@@ -44,6 +45,8 @@ export class DatabaseClient {
     const placeholders = columns.map(() => '?').join(',');
     
     const sql = `INSERT INTO ${table} (${columns.join(',')}) VALUES (${placeholders})`;
+    console.debug(sql);
+    console.debug(values);
     const result = await this.execute(sql, values);
     return result.meta.last_row_id;
   }
