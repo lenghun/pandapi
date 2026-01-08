@@ -22,11 +22,13 @@
 	"dependencies": {
 		"chanfana": "2.8.3",
 		"hono": "4.11.1",
+		"bcryptjs": "^2.4.3",
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "0.10.11",
 		"@types/node": "24.10.1",
+		 "@types/bcryptjs": "^2.4.6",
 		"typescript": "5.9.3",
 		"vitest": "3.2.4",
 		"wrangler": "4.56.0"
