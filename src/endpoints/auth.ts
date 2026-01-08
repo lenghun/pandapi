@@ -9,20 +9,23 @@ import { fromHono } from "chanfana";
 import { request } from 'http';
 import type { JwtVariables } from 'hono/jwt'
 import { ms } from 'zod/v4/locales';
-
+import { RegisterSchema, LoginSchema, UpdateUserSchema, UpdatePasswordSchema } from '../schemas/user';
+import { getDatabase } from '../lib/db';
+import bcrypt from 'bcryptjs';
 
 export class LoginEndpoint extends OpenAPIRoute {
 	public schema = {
 		tags: ["授权"],
 		summary: "登陆", // This is optional
 		request: {
-			body: contentJson(
-				z.object({
-					username: z.string(),
-					password: z.string(),
-				}),
-			),
-		},
+          body: {
+			content: {
+				'application/json': {
+					schema: LoginSchema,
+          },
+        },
+      },
+    },
 		responses: {
 			"200": {
 				description: "refreshToken",
@@ -41,21 +44,39 @@ export class LoginEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		const db = c.env.DB;
-		const res = await db.prepare('select * from users where username = ? and password = ?')
-			.bind(data.body.username, await simpleHash(data.body.password)).first();
-		if (res == null) {
-			return {
+		 const db = getDatabase(c.env);
+			
+			// 查找用户
+			const user = await db.queryFirst(
+			  'SELECT * FROM users WHERE username = ?',
+			  [data.body.username]
+			);
+			
+			if (!user) {
+			  return c.json({
 				success: false,
-				result: {
-					msg: "用户名或密码错误"
-				}
+				error: {
+				  code: 'INVALID_CREDENTIALS',
+				  message: '邮箱或密码错误',
+				},
+			  }, 401);
 			}
-		}
+			
+			// 验证密码
+			const isValid = await bcrypt.compare(data.body.password, user.password_hash);
+			if (!isValid) {
+			  return c.json({
+				success: false,
+				error: {
+				  code: 'INVALID_CREDENTIALS',
+				  message: '邮箱或密码错误',
+				},
+			  }, 401);
+			}
 		var exp=Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
 		const refreshToken = await sign({
-			sub: res.Id,
-			exp: exp, 	
+			sub: user.Id,
+			exp: exp,
 			type: 'refresh',
 		}, c.env.JWT_SECRET+'refresh');
 		return {
@@ -151,13 +172,13 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		tags: ["授权"],
 		summary: "注册", // This is optional
 		request: {
-			body: contentJson(
-				z.object({
-					username: z.string(),
-					password: z.string(),
-					email: z.string(),
-				}),
-			),
+          body: {
+			content: {
+				'application/json': {
+					schema: RegisterSchema,
+					},
+				},
+			},
 		},
 		responses: {
 			"200": {
@@ -175,13 +196,40 @@ export class RegisterEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		const db = c.env.DB;
-		const res = await db.prepare('insert into users (username,NickName, password, email,avatar,InviteUser,IsAdmin) values (?, ?, ?, ?, ?, ?, ?)')
-			.bind(data.body.username, data.body.username, await simpleHash(data.body.password), data.body.email, "default_avatar.png", "", false)
-			.run();
-
+		const db = getDatabase(c.env);
+    // 检查用户是否已存在
+    const existingUser = await db.queryFirst(
+      'SELECT id FROM users WHERE email = ? OR username = ?',
+      [data.body.email, data.body.username]
+    );
+    
+    if (existingUser) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'USER_EXISTS',
+          message: '用户名或邮箱已存在',
+        },
+      }, 409);
+    }
+	
+		const salt = await bcrypt.genSalt(10);
+		const passwordHash = await bcrypt.hash(data.body.password, salt);
+		
+		// 创建用户
+		const userId = await db.insert('users', {
+		  username: data.body.username,
+		  email: data.body.email,
+		  password_hash: passwordHash,
+		  role: 'user',
+		  is_verified: false,
+		  follower_count: 0,
+		  following_count: 0,
+		  created_at: new Date().toISOString(),
+		  updated_at: new Date().toISOString(),
+		});
 		return {
-			success: res.success,
+			success: true,
 			result: {
 				msg: "注册成功",
 			}

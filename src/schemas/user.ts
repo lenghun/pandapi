@@ -23,7 +23,7 @@ export const RegisterSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-  email: z.string().email().describe('邮箱'),
+  username: z.string().describe('用户名'),
   password: z.string().min(1).describe('密码'),
 });
 
