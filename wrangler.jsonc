@@ -13,9 +13,5 @@
 			"database_id": "cdb7c4b8-0ae2-4691-95b0-43561362c86e"
 		}
 	],
-	"vars":{
-		"JWT_SECRET" : "your-secret-key-change-in-production",
-		"ENVIRONMENT" : "production",
-		"API_BASE_URL" : "/api/v1"
-	}
+	"vars": {"JWT_SECRET": "your-secret-key-change-in-production"}
 }

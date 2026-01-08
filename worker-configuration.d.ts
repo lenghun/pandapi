@@ -10,9 +10,7 @@ declare namespace Cloudflare {
 	}
 }
 interface Env extends Cloudflare.Env {
-	JWT_SECRET: "your-secret-key-change-in-production";
-    ENVIRONMENT:"production";
-    API_BASE_URL : "/api/v1";
+	JWT_SECRET: "SignatureKey";
 }
 
 // Begin runtime types
