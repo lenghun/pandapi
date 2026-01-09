@@ -40,4 +40,4 @@ export class me extends OpenAPIRoute {
     }
 }
 export const usersRouter = fromHono(new Hono());
-usersRouter.post("/me", me)
+usersRouter.get("/me", me)
