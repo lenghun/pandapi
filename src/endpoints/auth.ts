@@ -242,25 +242,6 @@ const columns = Object.keys(data1);
 			}
 		}; 
 		// 创建用户
-		const userId = await db.insert('users', {
-		  username: data.body.username,
-		  email: data.body.email,
-		  password_hash: passwordHash,
-		  role: 'user',
-		  bio:'',avatar_url:'',
-		  is_verified: false,
-		  follower_count: 0,
-		  following_count: 0,
-		  created_at: new Date().toISOString(),
-		  updated_at: new Date().toISOString(),
-		});
-		return {
-			success: true,
-			result: {
-				msg: "注册成功",
-			}
-		};
-
 	}
 
 }
