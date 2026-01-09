@@ -1,16 +1,10 @@
 import { Hono } from 'hono'
 import { sign, verify } from 'hono/jwt'
 import { contentJson, OpenAPIRoute } from "chanfana";
-import { AppContext, HandleArgs } from "../types";
+import { AppContext } from "../types";
 import { z } from "zod";
-import { json } from 'stream/consumers';
-import { email } from 'zod/v4';
 import { fromHono } from "chanfana";
-import { request } from 'http';
-import type { JwtVariables } from 'hono/jwt'
-import { ms } from 'zod/v4/locales';
-import { RegisterSchema, LoginSchema, UpdateUserSchema, UpdatePasswordSchema } from '../schemas/user';
-import { getDatabase } from '../lib/db';
+import { RegisterSchema, LoginSchema } from '../schemas/user';
 import bcrypt from 'bcryptjs';
 import { User } from '../types/index';
 
