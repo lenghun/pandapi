@@ -4,7 +4,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext, HandleArgs } from "../types";
 import { z } from "zod";
 import { json } from 'stream/consumers';
-import { email } from 'zod/v4';
+import { any, email } from 'zod/v4';
 import { fromHono } from "chanfana";
 import { request } from 'http';
 import type { JwtVariables } from 'hono/jwt'
@@ -188,6 +188,7 @@ export class RegisterEndpoint extends OpenAPIRoute {
 					result: z.object({
 						msg: z.string(),
 						token: z.string(),
+						value:z.any(),
 					}),
 				}),
 			},
@@ -216,6 +217,33 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		const salt = await bcrypt.genSalt(10);
 		const passwordHash = await bcrypt.hash(data.body.password, salt);
 		
+const  data1:Record<string, any>= {
+		  username: data.body.username,
+		  email: data.body.email,
+		  password_hash: passwordHash,
+		  role: 'user',
+		  bio:'',avatar_url:'',
+		  is_verified: false,
+		  follower_count: 0,
+		  following_count: 0,
+		  created_at: new Date().toISOString(),
+		  updated_at: new Date().toISOString(),
+		};
+
+const columns = Object.keys(data1);
+    const values = columns.map(col => data1[col]);
+    const placeholders = columns.map(() => '?').join(',');
+    
+    const sql = `INSERT INTO users (${columns.join(',')}) VALUES (${placeholders})`;
+    
+
+		return {
+			success: true,
+			result: {
+				msg: sql,
+				value:values
+			}
+		}; 
 		// 创建用户
 		const userId = await db.insert('users', {
 		  username: data.body.username,
