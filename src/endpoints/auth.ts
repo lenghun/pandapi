@@ -27,11 +27,10 @@ export class LoginEndpoint extends OpenAPIRoute {
 				description: "refreshToken",
 				...contentJson({
 					success: Boolean,
-					result: z.object({
-						msg: z.string(),
-						refreshToken: z.string(),
-						exp: z.number(),
-					}),
+						msg: string,
+						refreshToken: string,
+						exp: number,
+				
 				}),
 			},
 		},
@@ -73,11 +72,11 @@ export class LoginEndpoint extends OpenAPIRoute {
 		}, c.env.JWT_SECRET+'refresh');
 		return {
 			success: true,
-			result: {
+			
 				refreshToken: refreshToken,
 				exp: exp,
 				msg: "登陆成功"
-			}
+			
 		};
 
 	}
