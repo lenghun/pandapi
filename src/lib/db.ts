@@ -45,8 +45,8 @@ export class DatabaseClient {
     const placeholders = columns.map(() => '?').join(',');
     
     const sql = `INSERT INTO ${table} (${columns.join(',')}) VALUES (${placeholders})`;
-    console.error(sql);
-    console.error(values);
+    console.log(sql);
+    console.log(values);
     const result = await this.execute(sql, values);
     return result.meta.last_row_id;
   }
