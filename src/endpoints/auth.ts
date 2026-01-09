@@ -197,6 +197,10 @@ export class RegisterEndpoint extends OpenAPIRoute {
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const db = getDatabase(c.env);
+		console.log('Data body:', data.body);
+console.log('Email:', data.body?.email);
+console.log('Username:', data.body?.username);
+
     // 检查用户是否已存在
     const existingUser = await db.queryFirst(
       'SELECT id FROM users WHERE email = ? OR username = ?',
