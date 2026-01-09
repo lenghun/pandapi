@@ -4,7 +4,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext, HandleArgs } from "../types";
 import { z } from "zod";
 import { json } from 'stream/consumers';
-import { any, email } from 'zod/v4';
+import { email } from 'zod/v4';
 import { fromHono } from "chanfana";
 import { request } from 'http';
 import type { JwtVariables } from 'hono/jwt'
@@ -188,7 +188,6 @@ export class RegisterEndpoint extends OpenAPIRoute {
 					result: z.object({
 						msg: z.string(),
 						token: z.string(),
-						value:z.any(),
 					}),
 				}),
 			},
@@ -197,9 +196,12 @@ export class RegisterEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		const db =  c.env.DB;
+		const db = getDatabase(c.env);
     // 检查用户是否已存在
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').bind(...[data.body.email, data.body.username]).first();
+    const existingUser = await db.queryFirst(
+      'SELECT id FROM users WHERE email = ? OR username = ?',
+      [data.body.email, data.body.username]
+    );
     
     if (existingUser) {
       return c.json({
@@ -214,7 +216,8 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		const salt = await bcrypt.genSalt(10);
 		const passwordHash = await bcrypt.hash(data.body.password, salt);
 		
-const  data1:Record<string, any>= {
+		// 创建用户
+		const userId = await db.insert('users', {
 		  username: data.body.username,
 		  email: data.body.email,
 		  password_hash: passwordHash,
@@ -225,23 +228,14 @@ const  data1:Record<string, any>= {
 		  following_count: 0,
 		  created_at: new Date().toISOString(),
 		  updated_at: new Date().toISOString(),
-		};
-
-const columns = Object.keys(data1);
-    const values = columns.map(col => data1[col]);
-    const placeholders = columns.map(() => '?').join(',');
-    
-    const sql = `INSERT INTO users (${columns.join(',')}) VALUES (${placeholders})`;
-    
-
+		});
 		return {
 			success: true,
 			result: {
-				msg: sql,
-				value:values
+				msg: "注册成功",
 			}
-		}; 
-		// 创建用户
+		};
+
 	}
 
 }
