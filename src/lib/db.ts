@@ -27,6 +27,8 @@ export class DatabaseClient {
   }
 
   async queryFirst<T = any>(sql: string, params: any[] = []): Promise<T | null> {
+     console.log(params)
+     console.log(params.length)
     const results = await this.query<T>(sql, params);
     return results[0] || null;
   }
