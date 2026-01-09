@@ -12,6 +12,7 @@ import { ms } from 'zod/v4/locales';
 import { RegisterSchema, LoginSchema, UpdateUserSchema, UpdatePasswordSchema } from '../schemas/user';
 import { getDatabase } from '../lib/db';
 import bcrypt from 'bcryptjs';
+import { User } from '../types/index';
 
 export class LoginEndpoint extends OpenAPIRoute {
 	public schema = {
@@ -44,13 +45,10 @@ export class LoginEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		 const db = getDatabase(c.env);
+		 const db = c.env.DB;
 			
 			// 查找用户
-			const user = await db.queryFirst(
-			  'SELECT * FROM users WHERE username = ?',
-			  [data.body.username]
-			);
+			const user = await db.prepare('SELECT * FROM users WHERE username = ?').bind(data.body.username).first<User>();
 			
 			if (!user) {
 			  return c.json({
@@ -61,7 +59,6 @@ export class LoginEndpoint extends OpenAPIRoute {
 				},
 			  }, 401);
 			}
-			
 			// 验证密码
 			const isValid = await bcrypt.compare(data.body.password, user.password_hash);
 			if (!isValid) {
@@ -75,7 +72,7 @@ export class LoginEndpoint extends OpenAPIRoute {
 			}
 		var exp=Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
 		const refreshToken = await sign({
-			sub: user.Id,
+			sub: user.id,
 			exp: exp,
 			type: 'refresh',
 		}, c.env.JWT_SECRET+'refresh');

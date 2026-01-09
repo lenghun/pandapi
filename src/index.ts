@@ -28,7 +28,7 @@ app.onError((err, c) => {
 	return c.json(
 		{
 			success: false,
-			errors: [{ code: 7000, message: "Internal Server Error"+c.env.JWT_SECRET,error:err }],
+			errors: [{ code: 7000, message: "Internal Server Error",error:err }],
 		},
 		500,
 	);
@@ -39,9 +39,9 @@ const openapi = fromHono(app, {
 	docs_url: "/",
 	schema: {
 		info: {
-			title: "My Awesome API",
+			title: "熊猫信息 API",
 			version: "2.0.0",
-			description: "This is the documentation for my awesome API.",
+			description: "熊猫信息查询、亲属关系计算和内容分享 API.",
 		}
 	},
 });
