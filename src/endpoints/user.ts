@@ -26,7 +26,7 @@ export class me extends OpenAPIRoute {
         const db = c.env.DB;
     const user = c.get('jwtPayload');
  
-        const res = await db.prepare('select * from users where id = ?')
+        const res = await db.prepare('select id, username, email, avatar_url, bio, role, is_verified, follower_count, following_count, created_at FROM users where id = ?')
             .bind(user.sub).first();
         if (res == null) {
             return {
