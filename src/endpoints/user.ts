@@ -25,10 +25,7 @@ export class me extends OpenAPIRoute {
         const data = await this.getValidatedData<typeof this.schema>();
         const db = c.env.DB;
     const user = c.get('jwtPayload');
-      return {
-                success: true,
-                data:user
-            };
+ 
         const res = await db.prepare('select * from users where id = ?')
             .bind(user.sub).first();
         if (res == null) {
