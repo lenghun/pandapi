@@ -5,9 +5,7 @@ import { authRouter } from "./endpoints/auth";
 
 import { ContentfulStatusCode } from "hono/utils/http-status";
 import { usersRouter } from "./endpoints/user";
-import { env } from "process";
 import type { JwtVariables } from 'hono/jwt'
-import { error } from "console";
 type Variables = JwtVariables
 
 // Start a Hono app

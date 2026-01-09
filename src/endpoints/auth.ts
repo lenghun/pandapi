@@ -7,6 +7,7 @@ import { fromHono } from "chanfana";
 import { RegisterSchema, LoginSchema } from '../schemas/user';
 import bcrypt from 'bcryptjs';
 import { User } from '../types/index';
+import { number, string } from 'zod/v4';
 
 export class LoginEndpoint extends OpenAPIRoute {
 	public schema = {
@@ -96,13 +97,11 @@ export class CheckEndpoint extends OpenAPIRoute {
 				description: "Returns token",
 				...contentJson({
 					success: Boolean,
-					result: z.object({
-						msg: z.string(),
-						accessToken: z.string(),
-						accessExp: z.number(),
-						refreshToken: z.string(),
-						refreshExp: z.number(),
-					}),
+					msg:string,
+						accessToken: string,
+						accessExp: number,
+						refreshToken: string,
+						refreshExp: number,			
 				}),
 			},
 		},
@@ -124,9 +123,7 @@ export class CheckEndpoint extends OpenAPIRoute {
 		if (res == null) {
 			return {
 				success: false,
-				result: {
 					msg: "用户不存在"
-				}
 			}
 		}
 
@@ -146,13 +143,12 @@ export class CheckEndpoint extends OpenAPIRoute {
 		}, c.env.JWT_SECRET+'refresh');
 		return {
 			success: true,
-			result: {
-				msg: "登录成功"+c.env.JWT_SECRET,
+				msg: "登录成功",
 				accessToken: accessToken,
 				accessExp: exp1,
 				refreshExp: exp7,
 				refreshToken: refreshToken
-			}
+			
 		};
 
 	}

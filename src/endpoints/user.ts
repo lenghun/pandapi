@@ -2,25 +2,19 @@ import { Hono } from "hono";
 import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext } from "../types";
 import { z } from "zod";
+import {User} from "../types/index"
+import { any } from "zod/v4";
 
-
-export class checkbindEndpoint extends OpenAPIRoute {
+export class me extends OpenAPIRoute {
     public schema = {
         tags: ["用户"],
-        summary: "检查绑定", // This is optional
-        request: {
-            body: contentJson(
-                z.object({
-                    key: z.string(),
-                    game: z.string(),
-                }),
-            ),
-        },
+        summary: "获取当前用户信息",      
         responses: {
             "200": {
                 description: "返回是否已绑定",
                 ...contentJson({
                     success: Boolean,
+                    data:any
                 }),
             },
         },
@@ -30,8 +24,9 @@ export class checkbindEndpoint extends OpenAPIRoute {
     public async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
         const db = c.env.DB;
-        const res = await db.prepare('select * from gameprofile where bindkey = ? and game = ?')
-            .bind(data.body.key, data.body.game).first();
+    const user = c.get('jwtPayload');
+        const res = await db.prepare('select * from users where id = ?')
+            .bind(user.sub).first();
         if (res == null) {
             return {
                 success: false,
@@ -39,9 +34,10 @@ export class checkbindEndpoint extends OpenAPIRoute {
         } else {
             return {
                 success: true,
+                data:res
             };
         }
     }
 }
 export const usersRouter = fromHono(new Hono());
-usersRouter.post("/checkbind", checkbindEndpoint)
+usersRouter.post("/me", me)

@@ -1,3 +1,8 @@
+import type { Context } from "hono";
+
+export type AppContext = Context<{ Bindings: Env }>;
+export type HandleArgs = [AppContext];
+
 export interface Env {
   DB: D1Database;
   JWT_SECRET: string;
