@@ -118,7 +118,7 @@ export class CheckEndpoint extends OpenAPIRoute {
 
 		const db = c.env.DB;
 		const res = await db.prepare('select * from users where id = ?')
-			.bind(payload.sub).first();
+			.bind(payload.sub).first<User>();
 
 		if (res == null) {
 			return {
@@ -132,12 +132,12 @@ export class CheckEndpoint extends OpenAPIRoute {
 		const accessToken = await sign({
 			name: res.username,
 			exp: exp1,
-			sub: res.Id,
-			role: res.IsAdmin ? 'admin' : 'user',
+			sub: res.id,
+			role: res.role,
 			type: 'access',
 		}, c.env.JWT_SECRET);
 		const refreshToken = await sign({
-			sub: res.Id,
+			sub: res.id,
 			exp: exp7, // 7 day expiration	
 			type: 'refresh',
 		}, c.env.JWT_SECRET+'refresh');
