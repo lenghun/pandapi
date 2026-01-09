@@ -196,16 +196,10 @@ export class RegisterEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		const db = getDatabase(c.env);
-		console.log('Data body:', data.body);
-console.log('Email:', data.body?.email);
-console.log('Username:', data.body?.username);
+		const db = c.env.DB;
 
     // 检查用户是否已存在
-    const existingUser = await db.queryFirst(
-      'SELECT id FROM users WHERE email = ? OR username = ?',
-      [data.body.email, data.body.username]
-    );
+    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').bind(data.body.email, data.body.username).first();
     
     if (existingUser) {
       return c.json({
@@ -221,22 +215,12 @@ console.log('Username:', data.body?.username);
 		const passwordHash = await bcrypt.hash(data.body.password, salt);
 		
 		// 创建用户
-		const userId = await db.insert('users', {
-		  username: data.body.username,
-		  email: data.body.email,
-		  password_hash: passwordHash,
-		  role: 'user',
-		  bio:'',avatar_url:'',
-		  is_verified: false,
-		  follower_count: 0,
-		  following_count: 0,
-		  created_at: new Date().toISOString(),
-		  updated_at: new Date().toISOString(),
-		});
+		const result = await db.prepare('INSERT INTO users (username,email,password_hash,role,bio,avatar_url,is_verified,follower_count,following_count,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+		.bind(data.body.username,data.body.email,passwordHash,'user','','',false, 0, 0, new Date().toISOString(), new Date().toISOString()).run()
 		return {
 			success: true,
 			result: {
-				msg: "注册成功",
+				msg: "注册成功"+result.meta.last_row_id,
 			}
 		};
 
