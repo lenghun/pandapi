@@ -1,8 +1,6 @@
 import { Hono } from "hono";
 import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext } from "../types";
-import { z } from "zod";
-import {User} from "../types/index"
 import { any } from "zod/v4";
 
 export class me extends OpenAPIRoute {
