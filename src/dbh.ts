@@ -55,11 +55,13 @@ export class DatabaseClient {
       .filter(key => data[key] !== undefined)
       .map(key => `${key} = ?`);
     
+    console.debug(updates);
     if (updates.length === 0) return false;
     
     const values = updates.map(update => data[update.split(' = ')[0]]);
     values.push(id);
     
+    console.debug(values);
     const sql = `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`;
     await this.execute(sql, values);
     return true;
