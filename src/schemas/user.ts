@@ -31,7 +31,6 @@ export const UpdateUserSchema = z.object({
   username: z.string().min(3).max(30).optional(),
   avatar_url: z.string().url().optional(),
   bio: z.string().max(500).optional(),
-  id :z.number(),
 });
 
 export const UpdatePasswordSchema = z.object({
