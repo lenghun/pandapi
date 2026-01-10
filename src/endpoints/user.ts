@@ -55,7 +55,7 @@ export class updateuset extends OpenAPIRoute {
         },
         responses: {
             "200": {
-                description: "返回是否已绑定",
+                description: "返回用户信息",
                 ...contentJson({
                     success: Boolean,
                     data: any
