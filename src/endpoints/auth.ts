@@ -35,8 +35,6 @@ export class LoginEndpoint extends OpenAPIRoute {
 			},
 		},
 	};
-
-
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const db = c.env.DB;
@@ -105,8 +103,6 @@ export class CheckEndpoint extends OpenAPIRoute {
 			},
 		},
 	};
-
-
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const rtoken = data.headers.Authorization.replace("Bearer ", "");
@@ -131,7 +127,7 @@ export class CheckEndpoint extends OpenAPIRoute {
 		const accessToken = await sign({
 			name: res.username,
 			exp: exp1,
-			sub: res.id,
+			id: res.id,
 			role: res.role,
 			type: 'access',
 		}, c.env.JWT_SECRET);
@@ -179,7 +175,6 @@ export class RegisterEndpoint extends OpenAPIRoute {
 			},
 		},
 	};
-
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const db = c.env.DB;
