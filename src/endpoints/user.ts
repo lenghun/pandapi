@@ -78,10 +78,8 @@ export class updateuset extends OpenAPIRoute {
     //   .bind(data.username, user.id).first<User>();
     const pars= [data.username, user.id];
     console.debug(pars);
-       const existing = await dbh.queryFirst<User>(
-        'SELECT id FROM users WHERE username = ? AND id != ?',
-       pars
-      );
+       const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
+       .bind(...pars).first<User>();
       if (existing) {
         return c.json({
           success: false,
@@ -98,10 +96,8 @@ export class updateuset extends OpenAPIRoute {
       updated_at: new Date().toISOString(),
     });
     
-    const updated = await dbh.queryFirst<User>(
-      'SELECT id, username, email, avatar_url, bio, role, is_verified, follower_count, following_count, created_at FROM users WHERE id = ?',
-      [user.id]
-    );
+    const updated = await db.prepare('SELECT id, username, email, avatar_url, bio, role, is_verified, follower_count, following_count, created_at FROM users WHERE id = ?')
+      .bind(user.id).first<User>();
     
     return c.json({
       success: true,
