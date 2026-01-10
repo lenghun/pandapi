@@ -2,8 +2,9 @@ import { Hono } from "hono";
 import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext, User } from "../types";
 import { any } from "zod/v4";
-import { UpdateUserSchema } from "../schemas/user";
+import { UpdatePasswordSchema, UpdateUserSchema } from "../schemas/user";
 import { getDatabase } from "../dbh";
+import bcrypt  from 'bcryptjs';
 export class getuser extends OpenAPIRoute {
     public schema = {
         tags: ["用户"],
@@ -40,7 +41,7 @@ export class getuser extends OpenAPIRoute {
     }
 }
 
-export class updateuset extends OpenAPIRoute {
+export class updateuser extends OpenAPIRoute {
     public schema = {
         tags: ["用户"],
         summary: "更新当前登录用户信息",
@@ -69,8 +70,6 @@ export class updateuset extends OpenAPIRoute {
         const data = (await this.getValidatedData<typeof this.schema>());
         const dbh=getDatabase(c.env);
         const Payload = c.get('jwtPayload');
-
-    console.log("id:",Payload.id);  
 
     // 如果更新用户名，检查是否重复
     if (data.body.username) {
@@ -101,6 +100,73 @@ export class updateuset extends OpenAPIRoute {
     });
     }
 }
+
+export class updatepassword extends OpenAPIRoute {
+    public schema = {
+        tags: ["用户"],
+        summary: "更新当前登录用户的密码",
+        request: {
+            body: {
+                content: {
+                    'application/json': {
+                        schema: UpdatePasswordSchema,
+                    },
+                },
+            },
+        },
+        responses: {
+            "200": {
+                description: "返回用户信息",
+                ...contentJson({
+                    success: Boolean,
+                    data: any
+                }),
+            },
+        },
+    };
+
+
+    public async handle(c: AppContext) {
+        const data = (await this.getValidatedData<typeof this.schema>());
+        const db=getDatabase(c.env);
+        const Payload = c.get('jwtPayload');
+
+    
+    // 获取当前用户密码
+    const currentUser = await db.queryFirst(
+      'SELECT password_hash FROM users WHERE id = ?',
+      [Payload.id]
+    );
+    
+    // 验证当前密码
+    const isValid = await bcrypt.compare(data.body.current_password, currentUser.password_hash);
+    if (!isValid) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'INVALID_PASSWORD',
+          message: '当前密码错误',
+        },
+      }, 401);
+    }
+    
+    // 加密新密码
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(data.body.new_password, salt);
+    
+    // 更新密码
+    await db.update('users', Payload.id, {
+      password_hash: newPasswordHash,
+      updated_at: new Date().toISOString(),
+    });
+    
+    return c.json({
+      success: true,
+      message: '密码更新成功',
+    });
+    }
+}
 export const usersRouter = fromHono(new Hono());
 usersRouter.get("/me", getuser)
-usersRouter.patch("/me", updateuset)
+usersRouter.patch("/me", updateuser)
+usersRouter.patch("/me/password", updatepassword)
