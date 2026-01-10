@@ -1,10 +1,5 @@
 import { Env } from './types';
 
-export interface QueryParams {
-  sql: string;
-  params?: any[];
-}
-
 export interface PaginationOptions {
   page?: number;
   limit?: number;
@@ -13,66 +8,75 @@ export interface PaginationOptions {
 }
 
 export class DatabaseClient {
-  constructor(private env: Env) {}
+  // 建议直接绑定 D1Database 实例
+  constructor(private db: D1Database) {}
 
-  async query<T = any>(sql: string, params: any[]): Promise<T[]> {
-    const stmt = this.env.DB.prepare(sql);
-   // if (params.length > 0) {
-      stmt.bind(...params);
-   // }
+  /**
+   * 核心修复：bind() 必须接收返回值
+   */
+  async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    let stmt = this.db.prepare(sql);
+    if (params.length > 0) {
+      // 关键：D1 的 bind 会返回一个新的 PreparedStatement 实例
+      stmt = stmt.bind(...params);
+    }
     const result = await stmt.all();
-    return result.results as T[];
+    return (result.results as T[]) || [];
   }
 
-  async queryFirst<T = any>(sql: string, params: any[]): Promise<T | null> {
-    console.debug(sql);
-    console.debug(params);
+  async queryFirst<T = any>(sql: string, params: any[] = []): Promise<T | null> {
     const results = await this.query<T>(sql, params);
     return results[0] || null;
   }
 
-  async execute(sql: string, params: any[]): Promise<{ success: boolean; meta: any }> {
-    const stmt = this.env.DB.prepare(sql);
+  async execute(sql: string, params: any[] = []): Promise<{ success: boolean; meta: any }> {
+    let stmt = this.db.prepare(sql);
     if (params.length > 0) {
-      stmt.bind(...params);
+      stmt = stmt.bind(...params);
     }
     const result = await stmt.run();
-    return { success: true, meta: result.meta };
+    return { success: result.success, meta: result.meta };
   }
 
+  /**
+   * 插入数据：自动处理字段引号
+   */
   async insert(table: string, data: Record<string, any>): Promise<number> {
-    const columns = Object.keys(data);
-    const values = columns.map(col => data[col]);
-    const placeholders = columns.map(() => '?').join(',');
+    const keys = Object.keys(data);
+    const columns = keys.map(key => `"${key}"`).join(', ');
+    const placeholders = keys.map(() => '?').join(', ');
+    const values = keys.map(key => data[key]);
     
-    const sql = `INSERT INTO ${table} (${columns.join(',')}) VALUES (${placeholders})`;
+    const sql = `INSERT INTO "${table}" (${columns}) VALUES (${placeholders})`;
     const result = await this.execute(sql, values);
     return result.meta.last_row_id;
   }
 
-  async update(table: string, id: number, data: Record<string, any>): Promise<boolean> {
-    const updates = Object.keys(data)
-      .filter(key => data[key] !== undefined)
-      .map(key => `${key} = ?`);
+  /**
+   * 更新数据：修复了原先通过 split 匹配参数的脆弱逻辑
+   */
+  async update(table: string, id: number | string, data: Record<string, any>): Promise<boolean> {
+    const keys = Object.keys(data).filter(key => data[key] !== undefined);
+    if (keys.length === 0) return false;
+
+    const setClause = keys.map(key => `"${key}" = ?`).join(', ');
+    const values = keys.map(key => data[key]);
+    values.push(id); // 对应 WHERE id = ?
     
-    console.debug(updates);
-    if (updates.length === 0) return false;
-    
-    const values = updates.map(update => data[update.split(' = ')[0]]);
-    values.push(id);
-    
-    console.debug(values);
-    const sql = `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`;
-    await this.execute(sql, values);
-    return true;
+    const sql = `UPDATE "${table}" SET ${setClause} WHERE id = ?`;
+    const result = await this.execute(sql, values);
+    return result.success;
   }
 
-  async delete(table: string, id: number): Promise<boolean> {
-    const sql = `DELETE FROM ${table} WHERE id = ?`;
-    await this.execute(sql, [id]);
-    return true;
+  async delete(table: string, id: number | string): Promise<boolean> {
+    const sql = `DELETE FROM "${table}" WHERE id = ?`;
+    const result = await this.execute(sql, [id]);
+    return result.success;
   }
 
+  /**
+   * 分页查询：保持高性能的同时支持基础过滤
+   */
   async paginate<T = any>(
     table: string,
     options: PaginationOptions = {},
@@ -87,48 +91,50 @@ export class DatabaseClient {
     const {
       page = 1,
       limit = 20,
-      orderBy = 'created_at',
+      orderBy = 'id',
       orderDir = 'DESC'
     } = options;
 
-    // 构建 WHERE 条件
     const whereConditions: string[] = [];
     const params: any[] = [];
 
+    // 构建过滤条件
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        if (Array.isArray(value)) {
-          whereConditions.push(`${key} IN (${value.map(() => '?').join(',')})`);
-          params.push(...value);
-        } else if (typeof value === 'string' && value.includes('%')) {
-          whereConditions.push(`${key} LIKE ?`);
-          params.push(value);
-        } else {
-          whereConditions.push(`${key} = ?`);
-          params.push(value);
-        }
+      if (value === undefined || value === null || value === '') return;
+
+      if (Array.isArray(value)) {
+        whereConditions.push(`"${key}" IN (${value.map(() => '?').join(',')})`);
+        params.push(...value);
+      } else if (typeof value === 'string' && value.includes('%')) {
+        whereConditions.push(`"${key}" LIKE ?`);
+        params.push(value);
+      } else {
+        whereConditions.push(`"${key}" = ?`);
+        params.push(value);
       }
     });
 
     const whereClause = whereConditions.length > 0 
-      ? `WHERE ${whereConditions.join(' AND ')}`
+      ? `WHERE ${whereConditions.join(' AND ')}` 
       : '';
 
-    // 查询总数
-    const countSql = `SELECT COUNT(*) as total FROM ${table} ${whereClause}`;
-    const countResult = await this.queryFirst<{ total: number }>(countSql, params);
-    const total = countResult?.total || 0;
-
-    // 查询数据
+    // 1. 并发执行总数查询和分页查询（利用 Worker 异步优势）
+    const countSql = `SELECT COUNT(*) as total FROM "${table}" ${whereClause}`;
     const offset = (page - 1) * limit;
     const dataSql = `
-      SELECT * FROM ${table}
+      SELECT * FROM "${table}"
       ${whereClause}
       ORDER BY ${orderBy} ${orderDir}
       LIMIT ? OFFSET ?
     `;
-    
-    const data = await this.query<T>(dataSql, [...params, limit, offset]);
+
+    // 使用 Promise.all 提升性能
+    const [countResult, data] = await Promise.all([
+      this.queryFirst<{ total: number }>(countSql, params),
+      this.query<T>(dataSql, [...params, limit, offset])
+    ]);
+
+    const total = countResult?.total || 0;
 
     return {
       data,
@@ -145,7 +151,8 @@ let dbInstance: DatabaseClient;
 
 export function getDatabase(env: Env): DatabaseClient {
   if (!dbInstance) {
-    dbInstance = new DatabaseClient(env);
+    // 确保你的 wrangler.toml 中绑定的名称是 DB
+    dbInstance = new DatabaseClient(env.DB);
   }
   return dbInstance;
 }
