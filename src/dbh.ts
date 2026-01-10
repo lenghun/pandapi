@@ -24,14 +24,14 @@ export class DatabaseClient {
     return result.results as T[];
   }
 
-  async queryFirst<T = any>(sql: string, params: any[] = []): Promise<T | null> {
+  async queryFirst<T = any>(sql: string, params: any[]): Promise<T | null> {
     console.debug(sql);
     console.debug(params);
     const results = await this.query<T>(sql, params);
     return results[0] || null;
   }
 
-  async execute(sql: string, params: any[] = []): Promise<{ success: boolean; meta: any }> {
+  async execute(sql: string, params: any[]): Promise<{ success: boolean; meta: any }> {
     const stmt = this.env.DB.prepare(sql);
     if (params.length > 0) {
       stmt.bind(...params);
