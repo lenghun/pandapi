@@ -71,9 +71,10 @@ export class updateuset extends OpenAPIRoute {
         const dbh=getDatabase(c.env);
         const user = c.get('jwtPayload');
 
-    console.debug("Object keys:", Object.keys(user));
-    console.debug("Object values:", Object.values(user));
-    console.debug(JSON.stringify(data));
+    console.log(user.id);  
+    console.log(data.body.username);   
+     console.log("Stringified:", JSON.stringify(user, null, 2));
+
     // 如果更新用户名，检查是否重复
     if (data.body.username) {
     //   const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
