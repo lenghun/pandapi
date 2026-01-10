@@ -14,23 +14,23 @@ export class LoginEndpoint extends OpenAPIRoute {
 		tags: ["授权"],
 		summary: "登陆", // This is optional
 		request: {
-          body: {
-			content: {
-				'application/json': {
-					schema: LoginSchema,
-          },
-        },
-      },
-    },
+			body: {
+				content: {
+					'application/json': {
+						schema: LoginSchema,
+					},
+				},
+			},
+		},
 		responses: {
 			"200": {
 				description: "refreshToken",
 				...contentJson({
 					success: Boolean,
-						msg: string,
-						refreshToken: string,
-						exp: number,
-				
+					msg: string,
+					refreshToken: string,
+					exp: number,
+
 				}),
 			},
 		},
@@ -39,44 +39,44 @@ export class LoginEndpoint extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		 const db = c.env.DB;
-			
-			// 查找用户
-			const user = await db.prepare('SELECT * FROM users WHERE username = ?').bind(data.body.username).first<User>();
-			
-			if (!user) {
-			  return c.json({
+		const db = c.env.DB;
+
+		// 查找用户
+		const user = await db.prepare('SELECT * FROM users WHERE username = ?').bind(data.body.username).first<User>();
+
+		if (!user) {
+			return c.json({
 				success: false,
 				error: {
-				  code: 'INVALID_CREDENTIALS',
-				  message: '邮箱或密码错误',
+					code: 'INVALID_CREDENTIALS',
+					message: '邮箱或密码错误',
 				},
-			  }, 401);
-			}
-			// 验证密码
-			const isValid = await bcrypt.compare(data.body.password, user.password_hash);
-			if (!isValid) {
-			  return c.json({
+			}, 401);
+		}
+		// 验证密码
+		const isValid = await bcrypt.compare(data.body.password, user.password_hash);
+		if (!isValid) {
+			return c.json({
 				success: false,
 				error: {
-				  code: 'INVALID_CREDENTIALS',
-				  message: '邮箱或密码错误',
+					code: 'INVALID_CREDENTIALS',
+					message: '邮箱或密码错误',
 				},
-			  }, 401);
-			}
-		var exp=Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
+			}, 401);
+		}
+		var exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
 		const refreshToken = await sign({
 			sub: user.id,
 			exp: exp,
 			type: 'refresh',
-		}, c.env.JWT_SECRET+'refresh');
+		}, c.env.JWT_SECRET + 'refresh');
 		return {
 			success: true,
-			
-				refreshToken: refreshToken,
-				exp: exp,
-				msg: "登陆成功"
-			
+
+			refreshToken: refreshToken,
+			exp: exp,
+			msg: "登陆成功"
+
 		};
 
 	}
@@ -96,11 +96,11 @@ export class CheckEndpoint extends OpenAPIRoute {
 				description: "Returns token",
 				...contentJson({
 					success: Boolean,
-					msg:string,
-						accessToken: string,
-						accessExp: number,
-						refreshToken: string,
-						refreshExp: number,			
+					msg: string,
+					accessToken: string,
+					accessExp: number,
+					refreshToken: string,
+					refreshExp: number,
 				}),
 			},
 		},
@@ -110,10 +110,10 @@ export class CheckEndpoint extends OpenAPIRoute {
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const rtoken = data.headers.Authorization.replace("Bearer ", "");
-		const payload = await verify(rtoken, c.env.JWT_SECRET+'refresh');
+		const payload = await verify(rtoken, c.env.JWT_SECRET + 'refresh');
 
-		if (payload.type !== 'refresh') {return {success: false, result: {msg: "无效的刷新令牌"}};}
-		if (payload.exp!=null && payload.exp < Math.floor(Date.now() / 1000)) {return {success: false, result: {msg: "登陆已过期"}};}
+		if (payload.type !== 'refresh') { return { success: false, result: { msg: "无效的刷新令牌" } }; }
+		if (payload.exp != null && payload.exp < Math.floor(Date.now() / 1000)) { return { success: false, result: { msg: "登陆已过期" } }; }
 
 		const db = c.env.DB;
 		const res = await db.prepare('select * from users where id = ?')
@@ -122,12 +122,12 @@ export class CheckEndpoint extends OpenAPIRoute {
 		if (res == null) {
 			return {
 				success: false,
-					msg: "用户不存在"
+				msg: "用户不存在"
 			}
 		}
 
-		var exp7=Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
-		var exp1=Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 1; // 1 day expiration
+		var exp7 = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // 7 day expiration
+		var exp1 = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 1; // 1 day expiration
 		const accessToken = await sign({
 			name: res.username,
 			exp: exp1,
@@ -139,15 +139,15 @@ export class CheckEndpoint extends OpenAPIRoute {
 			sub: res.id,
 			exp: exp7, // 7 day expiration	
 			type: 'refresh',
-		}, c.env.JWT_SECRET+'refresh');
+		}, c.env.JWT_SECRET + 'refresh');
 		return {
 			success: true,
-				msg: "登录成功",
-				accessToken: accessToken,
-				accessExp: exp1,
-				refreshExp: exp7,
-				refreshToken: refreshToken
-			
+			msg: "登录成功",
+			accessToken: accessToken,
+			accessExp: exp1,
+			refreshExp: exp7,
+			refreshToken: refreshToken
+
 		};
 
 	}
@@ -158,10 +158,10 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		tags: ["授权"],
 		summary: "注册", // This is optional
 		request: {
-          body: {
-			content: {
-				'application/json': {
-					schema: RegisterSchema,
+			body: {
+				content: {
+					'application/json': {
+						schema: RegisterSchema,
 					},
 				},
 			},
@@ -184,29 +184,29 @@ export class RegisterEndpoint extends OpenAPIRoute {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const db = c.env.DB;
 
-    // 检查用户是否已存在
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').bind(data.body.email, data.body.username).first();
-    
-    if (existingUser) {
-      return c.json({
-        success: false,
-        error: {
-          code: 'USER_EXISTS',
-          message: '用户名或邮箱已存在',
-        },
-      }, 409);
-    }
-	
+		// 检查用户是否已存在
+		const existingUser = await db.prepare('SELECT id FROM users WHERE email = ? OR username = ?').bind(data.body.email, data.body.username).first();
+
+		if (existingUser) {
+			return c.json({
+				success: false,
+				error: {
+					code: 'USER_EXISTS',
+					message: '用户名或邮箱已存在',
+				},
+			}, 409);
+		}
+
 		const salt = await bcrypt.genSalt(10);
 		const passwordHash = await bcrypt.hash(data.body.password, salt);
-		
+
 		// 创建用户
 		const result = await db.prepare('INSERT INTO users (username,email,password_hash,role,bio,avatar_url,is_verified,follower_count,following_count,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
-		.bind(data.body.username,data.body.email,passwordHash,'user','','',false, 0, 0, new Date().toISOString(), new Date().toISOString()).run()
+			.bind(data.body.username, data.body.email, passwordHash, 'user', '', '', false, 0, 0, new Date().toISOString(), new Date().toISOString()).run()
 		return {
 			success: true,
 			result: {
-				msg: "注册成功"+result.meta.last_row_id,
+				msg: "注册成功" + result.meta.last_row_id,
 			}
 		};
 
