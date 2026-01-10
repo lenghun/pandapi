@@ -66,7 +66,7 @@ export class updateuset extends OpenAPIRoute {
 
 
     public async handle(c: AppContext) {
-        const data = (await this.getValidatedData<typeof this.schema>()).body;
+        const data = (await this.getValidatedData<typeof this.schema>());
         const db = c.env.DB;
         const dbh=getDatabase(c.env);
         const user = c.get('jwtPayload');
@@ -74,13 +74,13 @@ export class updateuset extends OpenAPIRoute {
     console.debug(data);
        
     // 如果更新用户名，检查是否重复
-    if (data.username) {
+    if (data.body.username) {
     //   const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
     //   .bind(data.username, user.id).first<User>();
   
 
        const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
-       .bind(data.username, user.id).first<User>();
+       .bind(data.body.username, user.id).first<User>();
       if (existing) {
         return c.json({
           success: false,
@@ -92,7 +92,7 @@ export class updateuset extends OpenAPIRoute {
       }
     }
     await dbh.update('users', user.id, {
-      ...data,
+      ...data.body,
       updated_at: new Date().toISOString(),
     });
     
