@@ -67,24 +67,16 @@ export class updateuset extends OpenAPIRoute {
 
     public async handle(c: AppContext) {
         const data = (await this.getValidatedData<typeof this.schema>());
-        const db = c.env.DB;
         const dbh=getDatabase(c.env);
         const Payload = c.get('jwtPayload');
 
     console.log("id:",Payload.id);  
-    console.log(data.body.username);   
-     console.log("user:", JSON.stringify(Payload, null, 2));
 
     // 如果更新用户名，检查是否重复
     if (data.body.username) {
-    //   const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
-    //   .bind(data.username, user.id).first<User>();
+      const existing = await dbh.queryFirst<User>('SELECT id FROM users WHERE username = ? AND id != ?',[data.body.username, Payload.id]);
   
 
-    console.debug(JSON.stringify(Payload));
-       
-       const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
-       .bind(data.body.username, Payload.id).first<User>();
       if (existing) {
         return c.json({
           success: false,
@@ -100,8 +92,7 @@ export class updateuset extends OpenAPIRoute {
       updated_at: new Date().toISOString(),
     });
     
-    const updated = await db.prepare('SELECT id, username, email, avatar_url, bio, role, is_verified, follower_count, following_count, created_at FROM users WHERE id = ?')
-      .bind(Payload.id).first<User>();
+    const updated = await dbh.queryFirst<User>('SELECT id, username, email, avatar_url, bio, role, is_verified, follower_count, following_count, created_at FROM users WHERE id = ?',[Payload.id]);
     
     return c.json({
       success: true,
