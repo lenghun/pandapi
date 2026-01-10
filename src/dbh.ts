@@ -15,7 +15,7 @@ export interface PaginationOptions {
 export class DatabaseClient {
   constructor(private env: Env) {}
 
-  async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  async query<T = any>(sql: string, params: any[]): Promise<T[]> {
     const stmt = this.env.DB.prepare(sql);
    // if (params.length > 0) {
       stmt.bind(...params);
