@@ -71,6 +71,7 @@ export class updateuset extends OpenAPIRoute {
         const dbh=getDatabase(c.env);
         const user = c.get('jwtPayload');
 
+    console.debug(data);
        
     // 如果更新用户名，检查是否重复
     if (data.username) {
@@ -90,7 +91,6 @@ export class updateuset extends OpenAPIRoute {
         }, 409);
       }
     }
-    console.debug(data);
     await dbh.update('users', user.id, {
       ...data,
       updated_at: new Date().toISOString(),
