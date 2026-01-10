@@ -71,13 +71,14 @@ export class updateuset extends OpenAPIRoute {
         const dbh=getDatabase(c.env);
         const user = c.get('jwtPayload');
 
+    console.debug(JSON.stringify(data));
     // 如果更新用户名，检查是否重复
     if (data.body.username) {
     //   const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
     //   .bind(data.username, user.id).first<User>();
   
 
-    console.debug(user);
+    console.debug(JSON.stringify(user));
        
        const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
        .bind(data.body.username, user.id).first<User>();
