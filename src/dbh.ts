@@ -17,9 +17,9 @@ export class DatabaseClient {
 
   async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     const stmt = this.env.DB.prepare(sql);
-    if (params.length > 0) {
+   // if (params.length > 0) {
       stmt.bind(...params);
-    }
+   // }
     const result = await stmt.all();
     return result.results as T[];
   }
