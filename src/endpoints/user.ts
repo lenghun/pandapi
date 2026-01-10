@@ -77,6 +77,7 @@ export class updateuset extends OpenAPIRoute {
     //   const existing = await db.prepare('SELECT id FROM users WHERE username = ? AND id != ?')
     //   .bind(data.username, user.id).first<User>();
     const pars= [data.username, user.id];
+    console.debug(pars);
        const existing = await dbh.queryFirst<User>(
         'SELECT id FROM users WHERE username = ? AND id != ?',
        pars
