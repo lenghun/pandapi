@@ -1,11 +1,9 @@
 import { Hono } from "hono";
 import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
-import { AppContext, Panda, User } from "../types";
+import { AppContext, Panda } from "../types";
 import { z } from "zod";
-import { any } from "zod/v4";
 import { PandaSchema, UpdatePandaSchema, PaginationSchema, FamilyTreeParams } from "../schemas/panda";
 import { getDatabase } from "../dbh";
-import bcrypt from 'bcryptjs';
 
 
 export class list extends OpenAPIRoute {
