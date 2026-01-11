@@ -582,7 +582,7 @@ export class historyGet extends OpenAPIRoute {
 
 export class historyDelete extends OpenAPIRoute {
   public schema = {
-    tags: ["Search"],
+    tags: ["搜索"],
     summary: "清空搜索历史",
     responses: {
       200: { description: "搜索历史已清空" },
