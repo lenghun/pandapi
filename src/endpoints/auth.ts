@@ -87,7 +87,7 @@ export class CheckEndpoint extends OpenAPIRoute {
 		request: {
 			headers: z.object({
 				Authorization: z.string()
-			})
+			}).openapi({ type: 'object' })
 		},
 		responses: {
 			"200": {
@@ -170,7 +170,7 @@ export class RegisterEndpoint extends OpenAPIRoute {
 					result: z.object({
 						msg: z.string(),
 						token: z.string(),
-					}),
+					}).openapi({ type: 'object' }),
 				}),
 			},
 		},
