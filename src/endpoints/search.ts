@@ -520,7 +520,7 @@ export class historyPost extends OpenAPIRoute {
             schema: z.object({
               keyword: z.string().min(1).max(100).describe('搜索关键词'),
               result_count: z.number().int().min(0).optional().describe('搜索结果数量'),
-            }),
+            }).openapi({ type: 'object' }),
           },
         },
       } 

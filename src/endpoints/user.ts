@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext, User } from "../types";
-import { any } from "zod/v4";
+import { z } from "zod";
 import { UpdatePasswordSchema, UpdateUserSchema } from "../schemas/user";
 import { getDatabase } from "../dbh";
 import bcrypt  from 'bcryptjs';
@@ -14,7 +14,7 @@ export class getuser extends OpenAPIRoute {
                 description: "返回当前用户信息",
                 ...contentJson({
                     success: Boolean,
-                    data: any
+                    data: z.unknown().openapi({ type: 'object' })
                 }),
             },
         },
@@ -59,7 +59,7 @@ export class updateuser extends OpenAPIRoute {
                 description: "返回用户信息",
                 ...contentJson({
                     success: Boolean,
-                    data: any
+                    data: z.unknown().openapi({ type: 'object' })nknown().openapi({ type: 'object' })
                 }),
             },
         },
