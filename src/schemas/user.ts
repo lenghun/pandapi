@@ -20,7 +20,7 @@ export const RegisterSchema = z.object({
 }).refine(data => data.password === data.confirm_password, {
   message: '两次输入的密码不一致',
   path: ['confirm_password'],
-}).openapi({ type: 'object' });
+});
 
 export const LoginSchema = z.object({
   username: z.string().describe('用户名'),
@@ -40,4 +40,4 @@ export const UpdatePasswordSchema = z.object({
 }).refine(data => data.new_password === data.confirm_password, {
   message: '两次输入的新密码不一致',
   path: ['confirm_password'],
-}).openapi({ type: 'object' });
+});
