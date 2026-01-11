@@ -11,7 +11,7 @@ export class getuser extends OpenAPIRoute {
         summary: "获取当前用户信息",
         responses: {
             "200": {
-                description: "返回是否已绑定",
+                description: "返回当前用户信息",
                 ...contentJson({
                     success: Boolean,
                     data: any
