@@ -23,7 +23,7 @@ export class list extends OpenAPIRoute {
         description: "成功返回熊猫列表",
         ...contentJson({
           success: Boolean,
-          data: z.array(z.any()),
+          data: z.array(z.object({}).openapi({ type: 'object' })),
           pagination: z.object({
             total: z.number(),
             page: z.number(),
@@ -89,10 +89,10 @@ export class one extends OpenAPIRoute {
         ...contentJson({
           success: Boolean,
           data: z.object({
-            panda: z.any(),
-            parents: z.array(z.any()),
-            children: z.array(z.any()),
-            siblings: z.array(z.any()),
+            panda: z.object({}).openapi({ type: 'object' }),
+            parents: z.array(z.object({}).openapi({ type: 'object' })),
+            children: z.array(z.object({}).openapi({ type: 'object' })),
+            siblings: z.array(z.object({}).openapi({ type: 'object' })),
             stats: z.object({
               posts_count: z.number(),
               media_count: z.number(),
@@ -218,7 +218,7 @@ export class create extends OpenAPIRoute {
           'application/json': {
             schema: z.object({
               success: z.boolean(),
-              data: z.any(),
+              data: z.object({}).openapi({ type: 'object' }),
               message: z.string(),
             }),
           },
@@ -369,7 +369,7 @@ export class familytree extends OpenAPIRoute {
 }
 
 // 族谱递归函数
-async function getFamilyTree(db: any, pandaId: number, depth: number): Promise<any> {
+export async function getFamilyTree(db: any, pandaId: number, depth: number): Promise<any> {
   if (depth <= 0) return null;
   
   const panda = await db.queryFirst(`

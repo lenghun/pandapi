@@ -25,9 +25,9 @@ export class all extends OpenAPIRoute {
             schema: z.object({
               success: z.boolean(),
               data: z.object({
-                pandas: z.array(z.any()),
-                users: z.array(z.any()),
-                posts: z.array(z.any()),
+                pandas: z.array(z.object({}).openapi({ type: 'object' })),
+                users: z.array(z.object({}).openapi({ type: 'object' })),
+                posts: z.array(z.object({}).openapi({ type: 'object' })),
               }),
               meta: z.object({
                 query: z.string(),
