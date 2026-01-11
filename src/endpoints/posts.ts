@@ -11,7 +11,7 @@ import { de } from "zod/v4/locales";
 
 export class listPosts extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '获取内容列表',
     request: {
       query: z.object({
@@ -81,7 +81,7 @@ export class listPosts extends OpenAPIRoute {
 
 export class trending extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '获取热门内容',
     request: {
       query: z.object({
@@ -128,7 +128,7 @@ export class trending extends OpenAPIRoute {
 
 export class getPost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '获取内容详情',
     request: {
       params: z.object({ id: z.string().regex(/^\d+$/).transform(Number).describe('内容ID') }),
@@ -187,7 +187,7 @@ export class getPost extends OpenAPIRoute {
 
 export class createPost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '创建内容',
     security: [{ Bearer: [] }],
     request: {
@@ -225,7 +225,7 @@ export class createPost extends OpenAPIRoute {
 
 export class updatePost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '更新内容',
     security: [{ Bearer: [] }],
     request: {
@@ -263,7 +263,7 @@ export class updatePost extends OpenAPIRoute {
 
 export class deletePost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '删除内容',
     security: [{ Bearer: [] }],
     request: { params: z.object({ id: z.string().regex(/^\d+$/).transform(Number) }) },
@@ -291,7 +291,7 @@ export class deletePost extends OpenAPIRoute {
 
 export class likePost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '点赞内容',
     security: [{ Bearer: [] }],
     request: { params: z.object({ id: z.string().regex(/^\d+$/).transform(Number) }) },
@@ -319,7 +319,7 @@ export class likePost extends OpenAPIRoute {
 
 export class unlikePost extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '取消点赞',
     security: [{ Bearer: [] }],
     request: { params: z.object({ id: z.string().regex(/^\d+$/).transform(Number) }) },
@@ -345,7 +345,7 @@ export class unlikePost extends OpenAPIRoute {
 
 export class addComment extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '添加评论',
     security: [{ Bearer: [] }],
     request: {
@@ -393,7 +393,7 @@ export class addComment extends OpenAPIRoute {
 
 export class getComments extends OpenAPIRoute {
   public schema = {
-    tags: ['Posts'],
+    tags: ['内容'],
     summary: '获取内容评论',
     request: {
       params: z.object({ id: z.string().regex(/^\d+$/).transform(Number) }),
