@@ -418,9 +418,9 @@ export async function getFamilyTree(db: any, pandaId: number, depth: number): Pr
   return tree;
 }
 
-export const usersRouter = fromHono(new Hono());
-usersRouter.get("/", list)
-usersRouter.get("/{id}}", one)
-usersRouter.post("/", create)
-usersRouter.patch("/{id}", update)
-usersRouter.get("/{id}/familytree}", familytree)
+export const pandasRouter = fromHono(new Hono());
+pandasRouter.get("/", list)
+pandasRouter.get("/{id}}", one)
+pandasRouter.post("/", create)
+pandasRouter.patch("/{id}", update)
+pandasRouter.get("/{id}/familytree}", familytree)

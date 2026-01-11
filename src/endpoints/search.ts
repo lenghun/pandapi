@@ -603,12 +603,12 @@ export class historyDelete extends OpenAPIRoute {
 }
 
 
-export const usersRouter = fromHono(new Hono());
-usersRouter.get("/", all)
-usersRouter.get("/pandas", pandas)
-usersRouter.get("/users", users)
-usersRouter.get("/posts", posts)
-usersRouter.get("/trending", trending)
-usersRouter.post("/history", historyPost)
-usersRouter.get("/history", historyGet)
-usersRouter.delete("/history", historyDelete)
+export const searchRouter = fromHono(new Hono());
+searchRouter.get("/", all)
+searchRouter.get("/pandas", pandas)
+searchRouter.get("/users", users)
+searchRouter.get("/posts", posts)
+searchRouter.get("/trending", trending)
+searchRouter.post("/history", historyPost)
+searchRouter.get("/history", historyGet)
+searchRouter.delete("/history", historyDelete)
