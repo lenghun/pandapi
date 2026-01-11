@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { fromHono, contentJson, OpenAPIRoute } from "chanfana";
-import { AppContext, Panda } from "../types";
+import { fromHono, OpenAPIRoute } from "chanfana";
+import { AppContext } from "../types";
 import { z } from "zod";
-import { PandaSchema, UpdatePandaSchema, PaginationSchema, FamilyTreeParams } from "../schemas/panda";
+import { FamilyTreeParams } from "../schemas/panda";
 import { getDatabase } from "../dbh";
+import { getFamilyTree } from "./panda";
 
 
 export class all extends OpenAPIRoute {
