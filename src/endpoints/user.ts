@@ -119,7 +119,7 @@ export class updatepassword extends OpenAPIRoute {
                 description: "返回用户信息",
                 ...contentJson({
                     success: Boolean,
-                    data: any
+                    data: z.any(),
                 }),
             },
         },
