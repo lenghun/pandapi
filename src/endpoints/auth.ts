@@ -14,8 +14,13 @@ export class LoginEndpoint extends OpenAPIRoute {
 		tags: ["授权"],
 		summary: "登陆", // This is optional
 		request: {
-			body:
-				contentJson(LoginSchema),			
+			body: {
+				content: {
+					'application/json': {
+						schema: LoginSchema,
+					},
+				},
+			},
 		},
 		responses: {
 			"200": {
