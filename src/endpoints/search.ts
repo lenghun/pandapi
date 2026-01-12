@@ -26,16 +26,16 @@ export class all extends OpenAPIRoute {
             schema: z.object({
               success: z.boolean(),
               data: z.object({
-                pandas: z.array(z.object({}).openapi({ type: 'object' })),
-                users: z.array(z.object({}).openapi({ type: 'object' })),
-                posts: z.array(z.object({}).openapi({ type: 'object' })),
-              }).openapi({ type: 'object' }),
+                pandas: z.array(z.object({})),
+                users: z.array(z.object({})),
+                posts: z.array(z.object({})),
+              }),
               meta: z.object({
                 query: z.string(),
                 type: z.string(),
                 total_results: z.number(),
-              }).openapi({ type: 'object' }),
-            }).openapi({ type: 'object' }),
+              }),
+            }),
           },
         },
       },
@@ -520,7 +520,7 @@ export class historyPost extends OpenAPIRoute {
             schema: z.object({
               keyword: z.string().min(1).max(100).describe('搜索关键词'),
               result_count: z.number().int().min(0).optional().describe('搜索结果数量'),
-            }).openapi({ type: 'object' }),
+            }),
           },
         },
       } 

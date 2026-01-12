@@ -14,7 +14,7 @@ export class getuser extends OpenAPIRoute {
                 description: "返回当前用户信息",
                 ...contentJson({
                     success: Boolean,
-                    data: z.unknown().openapi({ type: 'object' })
+                    data: z.any()
                 }),
             },
         },
@@ -59,7 +59,7 @@ export class updateuser extends OpenAPIRoute {
                 description: "返回用户信息",
                 ...contentJson({
                     success: Boolean,
-                    data: z.unknown().openapi({ type: 'object' })
+                    data: z.any()
                 }),
             },
         },

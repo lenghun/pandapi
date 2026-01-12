@@ -23,13 +23,13 @@ export class list extends OpenAPIRoute {
         description: "成功返回熊猫列表",
         ...contentJson({
           success: Boolean,
-          data: z.array(z.object({}).openapi({ type: 'object' })),
+          data: z.array(z.any()),
           pagination: z.object({
             total: z.number(),
             page: z.number(),
             limit: z.number(),
             pages: z.number(),
-          }).openapi({ type: 'object' }),
+          }),
         }),
       },
     },
@@ -89,14 +89,14 @@ export class one extends OpenAPIRoute {
         ...contentJson({
           success: Boolean,
           data: z.object({
-            panda: z.object({}).openapi({ type: 'object' }),
-            parents: z.array(z.object({}).openapi({ type: 'object' })),
-            children: z.array(z.object({}).openapi({ type: 'object' })),
-            siblings: z.array(z.object({}).openapi({ type: 'object' })),
+            panda: z.any(),
+            parents: z.array(z.any()),
+            children: z.array(z.any()),
+            siblings: z.array(z.any()),
             stats: z.object({
               posts_count: z.number(),
               media_count: z.number(),
-            }).openapi({ type: 'object' }),
+            }),
           }),
         }),
       },
@@ -109,8 +109,8 @@ export class one extends OpenAPIRoute {
               error: z.object({
                 code: z.string(),
                 message: z.string(),
-              }).openapi({ type: 'object' }),
-            }).openapi({ type: 'object' }),
+              }),
+            }),
           },
         },
       },
