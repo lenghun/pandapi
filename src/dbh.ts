@@ -46,8 +46,12 @@ export class DatabaseClient {
     const columns = keys.map(key => `"${key}"`).join(', ');
     const placeholders = keys.map(() => '?').join(', ');
     const values = keys.map(key => data[key]);
-    
+         console.log("keys:", JSON.stringify(keys, null, 2));
+         console.log("values:", JSON.stringify(values, null, 2));
+
     const sql = `INSERT INTO "${table}" (${columns}) VALUES (${placeholders})`;
+    
+         console.log("sql:", sql);
     const result = await this.execute(sql, values);
     return result.meta.last_row_id;
   }

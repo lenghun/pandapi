@@ -238,7 +238,15 @@ export class create extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
     const Payload = c.get('jwtPayload');
- 
+    if(!Payload || Payload.role !== 'admin'){
+      return c.json({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: '权限不足',
+        },
+      }, 403);
+    }
     // 插入数据
     const id = await db.insert('pandas', {
       ...data,
@@ -286,7 +294,16 @@ export class update extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
    const id=data.params.id;
-   
+       const Payload = c.get('jwtPayload');
+    if(!Payload || Payload.role !== 'admin'){
+      return c.json({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: '权限不足',
+        },
+      }, 403);
+    }
     // 检查熊猫是否存在
     const existing = await db.queryFirst<{ id: number }>('SELECT id FROM pandas WHERE id = ?', [id]);
     if (!existing) {
