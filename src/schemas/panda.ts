@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const PandaSchema = z.object({
   pandapuid: z.number().positive().optional().describe('普系号'),
   name: z.string().min(1).max(50).describe('熊猫名字'),
+  picture: z.string().url().optional().describe('图片URL'),
   gender: z.enum(['male', 'female']).describe('性别'),
   birthday: z.string().optional().describe('出生日期'),
   birth_place: z.string().optional().describe('出生地'),

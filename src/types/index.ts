@@ -14,6 +14,7 @@ export interface Panda {
   id: number;
   pandapuid:number
   name: string;
+  picture?: string;
   gender: 'male' | 'female';
   birthday?: string;
   birth_place?: string;
