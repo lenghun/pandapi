@@ -12,6 +12,7 @@ export interface Env {
 
 export interface Panda {
   id: number;
+  pandapuid:number
   name: string;
   gender: 'male' | 'female';
   birthday?: string;
