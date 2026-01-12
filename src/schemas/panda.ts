@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
 export const PandaSchema = z.object({
+  pandapuid: z.number().int().positive().optional().describe('普系号').default(0),
   name: z.string().min(1).max(50).describe('熊猫名字'),
   gender: z.enum(['male', 'female']).describe('性别'),
   birthday: z.string().optional().describe('出生日期'),
   birth_place: z.string().optional().describe('出生地'),
   current_location: z.string().optional().describe('现居地'),
-  father_id: z.number().int().positive().optional().describe('父亲ID'),
-  mother_id: z.number().int().positive().optional().describe('母亲ID'),
+  father_id: z.number().int().positive().optional().describe('父亲ID').default(0),
+  mother_id: z.number().int().positive().optional().describe('母亲ID').default(0),
   weight: z.number().positive().optional().describe('体重(kg)'),
   health_status: z.string().optional().describe('健康状况'),
   personality: z.string().optional().describe('性格描述'),
