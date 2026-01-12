@@ -249,7 +249,7 @@ export class create extends OpenAPIRoute {
     }
     // 插入数据
     const id = await db.insert('pandas', {
-      ...data,
+      ...data.body,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
