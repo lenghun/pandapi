@@ -7,7 +7,6 @@ import { fromHono } from "chanfana";
 import { RegisterSchema, LoginSchema } from '../schemas/user';
 import bcrypt from 'bcryptjs';
 import { User } from '../types/index';
-import { number, string } from 'zod/v4';
 
 export class LoginEndpoint extends OpenAPIRoute {
 	public schema = {

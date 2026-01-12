@@ -13,9 +13,9 @@ export const PandaSchema = z.object({
   personality: z.string().optional().describe('性格描述'),
   appearance: z.string().optional().describe('外貌特征'),
   is_alive: z.boolean().default(true).describe('是否在世'),
-}).openapi({ type: 'object' });
+})
 
-export const UpdatePandaSchema = PandaSchema.partial().openapi({ type: 'object' });
+export const UpdatePandaSchema = PandaSchema.partial()
 
 export const PaginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1).describe('页码'),
@@ -24,7 +24,7 @@ export const PaginationSchema = z.object({
   gender: z.enum(['male', 'female']).optional().describe('性别筛选'),
   location: z.string().optional().describe('地点筛选'),
   is_alive: z.coerce.boolean().optional().describe('是否在世筛选'),
-}).openapi({ type: 'object' });
+})
 
 export const RelationshipSchema = z.object({
   related_panda_id: z.number().int().positive().describe('关联熊猫ID'),
@@ -33,8 +33,8 @@ export const RelationshipSchema = z.object({
     'grandparent', 'grandchild', 'cousin', 'other'
   ]).describe('关系类型'),
   notes: z.string().optional().describe('关系说明'),
-}).openapi({ type: 'object' });
+})
 
 export const FamilyTreeParams = z.object({
   depth: z.coerce.number().int().min(1).max(5).default(2).describe('查询深度'),
-}).openapi({ type: 'object' });
+})
