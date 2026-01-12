@@ -203,13 +203,7 @@ export class create extends OpenAPIRoute {
     tags: ["熊猫"],
     summary: "创建熊猫",
     request: {
-      body: {
-        content: {
-          'application/json': {
-            schema: PandaSchema,
-          },
-        },
-      },
+      body: contentJson(PandaSchema),
     },
     responses: {
       201: {
@@ -218,9 +212,9 @@ export class create extends OpenAPIRoute {
           'application/json': {
             schema: z.object({
               success: z.boolean(),
-              data: z.object({}).openapi({ type: 'object' }),
+              data: z.any(),
               message: z.string(),
-            }).openapi({ type: 'object' }),
+            }),
           },
         },
       },
