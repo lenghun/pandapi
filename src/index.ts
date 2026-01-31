@@ -9,6 +9,7 @@ import type { JwtVariables } from 'hono/jwt'
 import { pandasRouter } from "./endpoints/panda";
 import { searchRouter } from "./endpoints/search";
 import { postsRouter } from "./endpoints/posts";
+import { zoosRouter } from "./endpoints/zoos";
 type Variables = JwtVariables
 
 // Start a Hono app
@@ -57,6 +58,7 @@ app.use(
 // Register Tasks Sub router
 openapi.route("/auth", authRouter);
 openapi.route("/api/users", usersRouter);
+openapi.route("/api/zoos", zoosRouter);
 openapi.route("/api/pandas", pandasRouter);
 openapi.route("/api/searchs", searchRouter);
 openapi.route("/api/posts", postsRouter);

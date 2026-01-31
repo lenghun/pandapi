@@ -12,11 +12,13 @@ export interface Env {
 
 export interface Panda {
   id: number;
-  pandapuid:number
+  pandapuid: number
   name: string;
   picture?: string;
   gender: 'male' | 'female';
   birthday?: string;
+  birth_zoo_id?: number;
+  current_zoo_id?: number;
   birth_place?: string;
   current_location?: string;
   father_id?: number;
@@ -32,6 +34,8 @@ export interface Panda {
 }
 
 export interface PandaWithRelations extends Panda {
+  birth_zoo?: Zoo;
+  current_zoo?: Zoo;
   father_name?: string;
   mother_name?: string;
   children_count?: number;
@@ -109,4 +113,19 @@ export interface PaginatedResponse<T = any> {
     limit: number;
     pages: number;
   };
+}
+
+export interface Zoo {
+  zoo_id: number;
+  name: string;
+  english_name?: string;
+  location: string;
+  country: string;
+  type: 'zoo' | 'research_center' | 'breeding_base' | 'sanctuary';
+  established_year?: number;
+  panda_count: number;
+  description?: string;
+  website?: string;
+  created_at: string;
+  updated_at: string;
 }
