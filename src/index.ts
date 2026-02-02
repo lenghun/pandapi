@@ -10,11 +10,23 @@ import { pandasRouter } from "./endpoints/panda";
 import { searchRouter } from "./endpoints/search";
 import { postsRouter } from "./endpoints/posts";
 import { zoosRouter } from "./endpoints/zoos";
+import { cors } from 'hono/cors'
 type Variables = JwtVariables
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env, Variables: Variables }>();
-
+app.use(
+	'*',
+	cors({
+		origin: [
+			'https://pandapu.pages.dev',
+			'https://pandapu.coldsoul.net'
+		],
+		allowHeaders: ['Content-Type', 'Authorization'],
+		allowMethods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
+		credentials: true
+	})
+);
 app.onError((err, c) => {
 	if (err instanceof ApiException) {
 		// If it's a Chanfana ApiException, let Chanfana handle the response
