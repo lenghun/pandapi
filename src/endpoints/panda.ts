@@ -122,7 +122,8 @@ export class one extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
     const id = data.params.id;
-console.log(data);
+
+  console.debug('查询ID:', id);
     // 获取熊猫基本信息
     const panda = await db.queryFirst(`
       SELECT 
@@ -134,7 +135,12 @@ console.log(data);
       LEFT JOIN pandas mother ON p.mother_id = mother.id
       WHERE p.id = ?
     `, [id]);
-console.log(panda);
+
+  console.debug('查询结果:', JSON.stringify(panda, null, 2));
+  console.debug('panda类型:', typeof panda);
+  console.debug('panda是否为null:', panda === null);
+  console.debug('panda是否为undefined:', panda === undefined);
+  console.debug('panda.id:', panda?.id);
     if (!panda) {
       return c.json({
         success: false,
