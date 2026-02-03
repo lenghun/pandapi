@@ -296,7 +296,7 @@ export class update extends OpenAPIRoute {
     const db = getDatabase(c.env);
    const id=data.params.id;
        const Payload = c.get('jwtPayload');
-       console.log("Payload:", JSON.stringify(Payload, null, 2));
+       console.log(JSON.stringify(Payload, null, 2));
     if(!Payload || Payload.role !== 'admin'){
       return c.json({
         success: false,
