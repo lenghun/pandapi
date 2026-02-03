@@ -60,7 +60,13 @@ const openapi = fromHono(app, {
 	},
 });
 app.use(
-	'/*/admin/*', (c, next) => {
+	'*', (c, next) => {
+		if (c.req.path.startsWith('/auth')) {
+			return next()
+		}
+		if(c.req.method === 'GET'){
+			return next()
+		}
 		const jwtMiddleware = jwt({
 			secret: c.env.JWT_SECRET,
 		})
