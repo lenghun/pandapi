@@ -143,12 +143,7 @@ export class one extends OpenAPIRoute {
         },
       }, 404);
     }
-if(!panda.father_id){
-    panda.father_id=0;
-}
-if(!panda.mother_id){
-    panda.mother_id=0;  
-}
+
     // 并行获取亲属信息
     const [parents, children, siblings, stats] = await Promise.all([
       // 父母
@@ -176,6 +171,7 @@ if(!panda.mother_id){
             (p.father_id = ? AND p.mother_id IS NULL) OR
             (p.father_id IS NULL AND p.mother_id = ?)
           )
+            and p.father_id IS NOT NULL AND p.mother_id IS NOT NULL and p.father_id != 0 and p.mother_id != 0
         ORDER BY p.birthday
       `, [id, panda.father_id, panda.mother_id,
         panda.father_id, panda.mother_id]),
