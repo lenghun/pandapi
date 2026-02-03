@@ -64,12 +64,15 @@ app.use(
 		if (c.req.path.startsWith('/auth')) {
 			return next()
 		}
-		if(c.req.method === 'GET'){
-			return next()
-		}
 		const jwtMiddleware = jwt({
 			secret: c.env.JWT_SECRET,
 		})
+		if(c.req.path === '/users/me'){
+		return jwtMiddleware(c, next)
+		}
+		if(c.req.method === 'GET'){
+			return next()
+		}
 		return jwtMiddleware(c, next)
 	}
 )
