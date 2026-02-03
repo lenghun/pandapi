@@ -60,7 +60,7 @@ const openapi = fromHono(app, {
 	},
 });
 app.use(
-	'/*/admin', (c, next) => {
+	'/*/admin/*', (c, next) => {
 		const jwtMiddleware = jwt({
 			secret: c.env.JWT_SECRET,
 		})
