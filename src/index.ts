@@ -60,7 +60,7 @@ const openapi = fromHono(app, {
 	},
 });
 app.use(
-	'/api/*', (c, next) => {
+	'/*/admin', (c, next) => {
 		const jwtMiddleware = jwt({
 			secret: c.env.JWT_SECRET,
 		})
@@ -69,11 +69,11 @@ app.use(
 )
 // Register Tasks Sub router
 openapi.route("/auth", authRouter);
-openapi.route("/api/users", usersRouter);
-openapi.route("/api/zoos", zoosRouter);
-openapi.route("/api/pandas", pandasRouter);
-openapi.route("/api/searchs", searchRouter);
-openapi.route("/api/posts", postsRouter);
+openapi.route("/users", usersRouter);
+openapi.route("/zoos", zoosRouter);
+openapi.route("/pandas", pandasRouter);
+openapi.route("/searchs", searchRouter);
+openapi.route("/posts", postsRouter);
 
 
 // Export the Hono app
