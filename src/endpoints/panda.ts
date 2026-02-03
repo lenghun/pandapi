@@ -4,6 +4,8 @@ import { AppContext, Panda } from "../types";
 import { z } from "zod";
 import { PandaSchema, UpdatePandaSchema, PaginationSchema, FamilyTreeParams } from "../schemas/panda";
 import { getDatabase } from "../dbh";
+import { Console } from "console";
+import { console } from "inspector/promises";
 
 
 export class list extends OpenAPIRoute {
@@ -121,9 +123,8 @@ export class one extends OpenAPIRoute {
   public async handle(c: AppContext) {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
-    const id = data.params.id;
-
-  console.debug('查询ID:', id);
+      const id = data.params.id;
+  console.info('请求熊猫ID:', id);
     // 获取熊猫基本信息
     const panda = await db.queryFirst(`
       SELECT 
@@ -136,11 +137,11 @@ export class one extends OpenAPIRoute {
       WHERE p.id = ?
     `, [id]);
 
-  console.debug('查询结果:', JSON.stringify(panda, null, 2));
-  console.debug('panda类型:', typeof panda);
-  console.debug('panda是否为null:', panda === null);
-  console.debug('panda是否为undefined:', panda === undefined);
-  console.debug('panda.id:', panda?.id);
+  console.info('查询结果:', JSON.stringify(panda, null, 2));
+  console.info('panda类型:', typeof panda);
+  console.info('panda是否为null:', panda === null);
+  console.info('panda是否为undefined:', panda === undefined);
+  console.info('panda.id:', panda?.id);
     if (!panda) {
       return c.json({
         success: false,
