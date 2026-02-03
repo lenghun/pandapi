@@ -67,8 +67,7 @@ export class DatabaseClient {
     const values = keys.map(key => data[key]);
     values.push(id); // 对应 WHERE id = ?
     const sql = `UPDATE "${table}" SET ${setClause} WHERE id = ?`;
-    console.log("Update SQL:", sql);
-    console.log("Update values:", JSON.stringify(values, null, 2));
+    
     const result = await this.execute(sql, values);
     return result.success;
   }

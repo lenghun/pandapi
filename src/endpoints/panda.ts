@@ -121,7 +121,7 @@ export class one extends OpenAPIRoute {
   public async handle(c: AppContext) {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
-      const id = data.params.id;
+    const id = data.params.id;
     // 获取熊猫基本信息
     const panda = await db.queryFirst(`
       SELECT 
@@ -239,7 +239,7 @@ export class create extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
     const Payload = c.get('jwtPayload');
-    if(!Payload || Payload.role !== 'admin'){
+    if (!Payload || Payload.role !== 'admin') {
       return c.json({
         success: false,
         error: {
@@ -254,9 +254,9 @@ export class create extends OpenAPIRoute {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
-    
+
     const newPanda = await db.queryFirst<Panda>('SELECT * FROM pandas WHERE id = ?', [id]);
-    
+
     return c.json({
       success: true,
       data: newPanda,
@@ -281,7 +281,7 @@ export class update extends OpenAPIRoute {
       },
     },
     responses: {
-       200: {
+      200: {
         description: '成功更新熊猫信息',
       },
       404: {
@@ -294,10 +294,9 @@ export class update extends OpenAPIRoute {
   public async handle(c: AppContext) {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
-   const id=data.params.id;
-       const Payload = c.get('jwtPayload');
-       console.log(JSON.stringify(Payload, null, 2));
-    if(!Payload || Payload.role !== 'admin'){
+    const id = data.params.id;
+    const Payload = c.get('jwtPayload');
+    if (!Payload || Payload.role !== 'admin') {
       return c.json({
         success: false,
         error: {
@@ -317,15 +316,15 @@ export class update extends OpenAPIRoute {
         },
       }, 404);
     }
-    
+
     // 更新数据
     await db.update('pandas', id, {
-      ...data,
+      ...data.body,
       updated_at: new Date().toISOString(),
     });
-    
+
     const updated = await db.queryFirst('SELECT * FROM pandas WHERE id = ?', [id]);
-    
+
     return c.json({
       success: true,
       data: updated,
@@ -345,7 +344,7 @@ export class familytree extends OpenAPIRoute {
       query: FamilyTreeParams,
     },
     responses: {
-       200: {
+      200: {
         description: '成功返回族谱信息',
       },
       404: {
@@ -359,7 +358,7 @@ export class familytree extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
     const id = data.params.id;
-  
+
     const panda = await db.queryFirst('SELECT * FROM pandas WHERE id = ?', [id]);
     if (!panda) {
       return c.json({
@@ -370,10 +369,10 @@ export class familytree extends OpenAPIRoute {
         },
       }, 404);
     }
-    
+
     // 递归获取族谱
     const familyTree = await getFamilyTree(db, id, data.query.depth);
-    
+
     return c.json({
       success: true,
       data: familyTree,
@@ -384,7 +383,7 @@ export class familytree extends OpenAPIRoute {
 // 族谱递归函数
 export async function getFamilyTree(db: any, pandaId: number, depth: number): Promise<any> {
   if (depth <= 0) return null;
-  
+
   const panda = await db.queryFirst(`
     SELECT p.*, 
       father.name as father_name,
@@ -394,25 +393,25 @@ export async function getFamilyTree(db: any, pandaId: number, depth: number): Pr
     LEFT JOIN pandas mother ON p.mother_id = mother.id
     WHERE p.id = ?
   `, [pandaId]);
-  
+
   if (!panda) return null;
-  
+
   const tree: any = {
     ...panda,
     father: null,
     mother: null,
     children: [],
   };
-  
+
   // 获取父母
   if (panda.father_id && depth > 1) {
     tree.father = await getFamilyTree(db, panda.father_id, depth - 1);
   }
-  
+
   if (panda.mother_id && depth > 1) {
     tree.mother = await getFamilyTree(db, panda.mother_id, depth - 1);
   }
-  
+
   // 获取子女
   if (depth > 1) {
     const children = await db.query(`
@@ -420,14 +419,14 @@ export async function getFamilyTree(db: any, pandaId: number, depth: number): Pr
       FROM pandas 
       WHERE father_id = ? OR mother_id = ?
     `, [pandaId, pandaId]);
-    
+
     tree.children = await Promise.all(
-      children.map(async (child: any) => 
+      children.map(async (child: any) =>
         await getFamilyTree(db, child.id, depth - 1)
       )
     );
   }
-  
+
   return tree;
 }
 
