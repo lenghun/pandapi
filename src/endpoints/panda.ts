@@ -4,7 +4,6 @@ import { AppContext, Panda } from "../types";
 import { z } from "zod";
 import { PandaSchema, UpdatePandaSchema, PaginationSchema, FamilyTreeParams } from "../schemas/panda";
 import { getDatabase } from "../dbh";
-import { console } from "node:inspector";
 
 
 export class list extends OpenAPIRoute {
