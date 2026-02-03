@@ -4,8 +4,7 @@ import { AppContext, Panda } from "../types";
 import { z } from "zod";
 import { PandaSchema, UpdatePandaSchema, PaginationSchema, FamilyTreeParams } from "../schemas/panda";
 import { getDatabase } from "../dbh";
-import { Console } from "console";
-import { console } from "inspector/promises";
+import { console } from "node:inspector";
 
 
 export class list extends OpenAPIRoute {
@@ -124,7 +123,7 @@ export class one extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
       const id = data.params.id;
-  console.info('请求熊猫ID:', id);
+  console.log('请求的熊猫ID:', id);
     // 获取熊猫基本信息
     const panda = await db.queryFirst(`
       SELECT 
