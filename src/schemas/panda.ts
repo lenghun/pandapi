@@ -6,6 +6,7 @@ export const PandaSchema = z.object({
   picture: z.string().optional().describe('图片URL'),
   gender: z.enum(['male', 'female']).describe('性别'),
   birthday: z.string().optional().describe('出生日期'),
+  passaway: z.string().optional().describe('去世日期'),
   birth_place: z.string().optional().describe('出生地'),
   current_location: z.string().optional().describe('现居地'),
   father_id: z.number().positive().optional().describe('父亲ID'),
