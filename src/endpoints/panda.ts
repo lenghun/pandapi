@@ -122,7 +122,6 @@ export class one extends OpenAPIRoute {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
       const id = data.params.id;
-  console.log('请求的熊猫ID:', id);
     // 获取熊猫基本信息
     const panda = await db.queryFirst(`
       SELECT 
@@ -135,11 +134,6 @@ export class one extends OpenAPIRoute {
       WHERE p.id = ?
     `, [id]);
 
-  console.info('查询结果:', JSON.stringify(panda, null, 2));
-  console.info('panda类型:', typeof panda);
-  console.info('panda是否为null:', panda === null);
-  console.info('panda是否为undefined:', panda === undefined);
-  console.info('panda.id:', panda?.id);
     if (!panda) {
       return c.json({
         success: false,
@@ -149,7 +143,12 @@ export class one extends OpenAPIRoute {
         },
       }, 404);
     }
-
+if(!panda.father_id){
+    panda.father_id=0;
+}
+if(!panda.mother_id){
+    panda.mother_id=0;  
+}
     // 并行获取亲属信息
     const [parents, children, siblings, stats] = await Promise.all([
       // 父母
@@ -173,7 +172,7 @@ export class one extends OpenAPIRoute {
         FROM pandas p
         WHERE p.id != ?
           AND (
-            (p.father_id = ? AND p.mother_id = ?) OR
+            (p.father_id = ? AND p.mother_id = ? ) OR
             (p.father_id = ? AND p.mother_id IS NULL) OR
             (p.father_id IS NULL AND p.mother_id = ?)
           )
