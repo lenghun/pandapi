@@ -22,7 +22,7 @@ export const UpdatePandaSchema = PandaSchema.partial()
 
 export const PaginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1).describe('页码'),
-  limit: z.coerce.number().int().min(1).max(100).default(20).describe('每页数量'),
+  limit: z.coerce.number().int().min(1).max(2000).default(20).describe('每页数量'),
   search: z.string().optional().describe('搜索关键词'),
   gender: z.enum(['male', 'female']).optional().describe('性别筛选'),
   location: z.string().optional().describe('地点筛选'),

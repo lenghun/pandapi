@@ -21,6 +21,6 @@ export const UpdatePostSchema = CreatePostSchema.partial().extend({
 })
 
 export const CommentSchema = z.object({
-  content: z.string().min(1).max(1000).describe('评论内容'),
+  content: z.string().min(1).max(2000).describe('评论内容'),
   parent_id: z.number().int().positive().optional().describe('父评论ID'),
 })
