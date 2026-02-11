@@ -20,7 +20,8 @@ app.use(
 	cors({
 		origin: [
 			'https://pandapu.pages.dev',
-			'https://pandapu.coldsoul.net'
+			'https://pandapu.coldsoul.net',
+			'http://localhost:4321',
 		],
 		allowHeaders: ['Content-Type', 'Authorization'],
 		allowMethods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
