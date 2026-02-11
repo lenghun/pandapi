@@ -36,16 +36,17 @@ app.onError((err, c) => {
 			err.status as ContentfulStatusCode,
 		);
 	}
+	var apierr = err as ApiException;
 
-	console.error("Global error handler caught:", err); // Log the error if it's not known
+	console.error("Global error handler caught:", apierr); // Log the error if it's not known
 
 	// For other errors, return a generic 500 response
 	return c.json(
 		{
 			success: false,
-			errors: [{ code: 7000, message: "Internal Server Error", error: err }],
+			errors: [{ code: 7000, message: "Internal Server Error", error: apierr }],
 		},
-		500,
+		(apierr.status || 500) as ContentfulStatusCode,
 	);
 });
 
