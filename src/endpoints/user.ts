@@ -147,7 +147,7 @@ export class updatepassword extends OpenAPIRoute {
           code: 'INVALID_PASSWORD',
           message: '当前密码错误',
         },
-      }, 401);
+      }, 500);
     }
     
     // 加密新密码
