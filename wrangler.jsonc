@@ -12,6 +12,5 @@
 			"database_name": "pandapu",
 			"database_id": "cdb7c4b8-0ae2-4691-95b0-43561362c86e"
 		}
-	],
-	"vars": {"JWT_SECRET": "your-secret-key-change-in-production"}
+	]
 }
