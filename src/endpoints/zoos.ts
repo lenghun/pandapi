@@ -40,10 +40,8 @@ export class listZoos extends OpenAPIRoute {
       limit: query.limit || 500,
     }, filters);
 
-    return c.json({
-      success: true,
-      data: result
-    });
+    return  result
+
   }
 }
 
