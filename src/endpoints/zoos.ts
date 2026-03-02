@@ -42,13 +42,7 @@ export class listZoos extends OpenAPIRoute {
 
     return c.json({
       success: true,
-      data: result,
-      pagination: {
-        total: result.total,
-        page: result.page,
-        limit: result.limit,
-        pages: result.pages,
-      },
+      data: result
     });
   }
 }
