@@ -28,19 +28,21 @@ export class listZoos extends OpenAPIRoute {
   public async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
     const query = data.query;
-    const db = getDatabase(c.env);
 
-    const filters: Record<string, any> = {};
-    if (query.zooid) filters.zoo_id = query.zooid;
-    if (query.zootype) filters.zootype = query.zootype;
-    if (query.location) filters.location = query.location;
+          const db = c.env.DB;
 
-    const result = await db.paginate('zoos', {
-      page: query.page,
-      limit: query.limit || 500,
-    }, filters);
-
-    return  result
+        const res = await db.prepare('select zoo_id, name, english_name, location, country, type, description FROM zoos ')
+          
+        if (res == null) {
+            return {
+                success: false,
+            }
+        } else {
+            return {
+                success: true,
+                data: res
+            };
+        }
 
   }
 }
