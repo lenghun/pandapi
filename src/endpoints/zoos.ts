@@ -29,20 +29,18 @@ export class listZoos extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>();
     const query = data.query;
 
-          const db = c.env.DB;
+    const db = c.env.DB;
 
-        const res = await db.prepare('select zoo_id, name, english_name, location, country, type, description FROM zoos ').all();
-          
-        if (res == null) {
-            return {
-                success: false,
-            }
-        } else {
-            return {
-                success: true,
-                data: res.results
-            };
-        }
+    const res = await db.prepare('select zoo_id, name, english_name, location, country, type, description FROM zoos ').all();
+
+    if (res == null) {
+      return {
+        success: false,
+      }
+    } else {
+      return
+      res.results;
+    }
 
   }
 }
