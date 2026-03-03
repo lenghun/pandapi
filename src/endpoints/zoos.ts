@@ -40,7 +40,7 @@ export class listZoos extends OpenAPIRoute {
         } else {
             return {
                 success: true,
-                data: res
+                data: res.results
             };
         }
 
