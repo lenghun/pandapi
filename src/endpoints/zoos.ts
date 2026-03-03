@@ -38,8 +38,7 @@ export class listZoos extends OpenAPIRoute {
         success: false,
       }
     } else {
-      return
-      res.results;
+      return res;
     }
 
   }
