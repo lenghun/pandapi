@@ -306,8 +306,8 @@ export class update extends OpenAPIRoute {
       }, 403);
     }
     // 检查熊猫是否存在
-    const id = await db.queryFirst<number>('SELECT id FROM pandas WHERE pandapuid = ?', [pid]);
-    if (!id) {
+    const existing = await db.queryFirst<{ id: number }>('SELECT id FROM pandas WHERE pandapuid = ?', [pid]);
+    if (!existing) {
       return c.json({
         success: false,
         error: {
@@ -316,6 +316,7 @@ export class update extends OpenAPIRoute {
         },
       }, 404);
     }
+    const id = existing.id;
 console.log('更新熊猫信息', { id, data: data.body });
     // 更新数据
     await db.update('pandas', id, {
