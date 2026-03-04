@@ -316,7 +316,7 @@ export class update extends OpenAPIRoute {
         },
       }, 404);
     }
-
+console.log('更新熊猫信息', { id, data: data.body });
     // 更新数据
     await db.update('pandas', id, {
       ...data.body,
