@@ -294,7 +294,7 @@ export class update extends OpenAPIRoute {
   public async handle(c: AppContext) {
     const data = (await this.getValidatedData<typeof this.schema>());
     const db = getDatabase(c.env);
-    const id = data.params.id;
+    const pid = data.params.id;
     const Payload = c.get('jwtPayload');
     if (!Payload || Payload.role !== 'admin') {
       return c.json({
@@ -306,8 +306,8 @@ export class update extends OpenAPIRoute {
       }, 403);
     }
     // 检查熊猫是否存在
-    const existing = await db.queryFirst<{ id: number }>('SELECT id FROM pandas WHERE id = ?', [id]);
-    if (!existing) {
+    const id = await db.queryFirst<{ id: number }>('SELECT id FROM pandas WHERE pandapuid = ?', [pid]);
+    if (!id) {
       return c.json({
         success: false,
         error: {
@@ -318,7 +318,7 @@ export class update extends OpenAPIRoute {
     }
 console.log('更新熊猫信息', { id, data: data.body });
     // 更新数据
-    await db.update('pandas', id, {
+    await db.update('pandas', id.id, {
       ...data.body,
       updated_at: new Date().toISOString(),
     });
