@@ -237,6 +237,7 @@ export class create extends OpenAPIRoute {
 
   public async handle(c: AppContext) {
     const data = (await this.getValidatedData<typeof this.schema>());
+    console.log('创建熊猫', data.body);
     const db = getDatabase(c.env);
     const Payload = c.get('jwtPayload');
     if (!Payload || Payload.role !== 'admin') {
